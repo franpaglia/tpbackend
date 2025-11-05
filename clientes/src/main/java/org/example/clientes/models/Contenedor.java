@@ -2,28 +2,35 @@ package org.example.clientes.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.math.BigDecimal;
 
 @Entity
+@Table(name = "contenedor")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "contenedores")
 public class Contenedor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idContenedor;
+    @Column(name = "id_contenedor")
+    private Long id;
 
-    private Double peso;
-    private Double volumen;
+    private String codigo;
+    private String tipo;
+
+    @Column(name = "capacidad_volumen")
+    private BigDecimal capacidadVolumen;
+
+    @Column(name = "capacidad_peso")
+    private BigDecimal capacidadPeso;
+
+    private String estado;
+
+    @Column(name = "ubicacion_actual")
+    private String ubicacionActual;
 
     @ManyToOne
-    @JoinColumn(name = "cliente_id")
+    @JoinColumn(name = "id_cliente")
     private Cliente cliente;
-
-    @ManyToOne
-    @JoinColumn(name = "estado_id")
-    private Estado estado;
-
-    private Long depositoId; // FK referencial al servicio de transporte (relación externa)
 }

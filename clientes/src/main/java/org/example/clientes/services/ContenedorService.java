@@ -15,7 +15,7 @@ public class ContenedorService {
     }
 
     public List<Contenedor> listarPorCliente(Long idCliente) {
-        return repo.findByClienteIdCliente(idCliente);
+        return repo.findByClienteId(idCliente);
     }
 
     public Contenedor registrar(Contenedor c) {

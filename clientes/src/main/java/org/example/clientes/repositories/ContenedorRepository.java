@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ContenedorRepository extends JpaRepository<Contenedor, Long> {
-    List<Contenedor> findByClienteIdCliente(Long idCliente);
+    List<Contenedor> findByClienteId(Long idCliente);
 }
