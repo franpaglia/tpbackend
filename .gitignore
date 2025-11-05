@@ -1,0 +1,91 @@
+# ===============================
+#  Java & Spring Boot
+# ===============================
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Logs
+logs/
+*.log
+*.log.*
+*.out
+
+# Build artifacts
+*.jar
+*.war
+*.ear
+
+# ===============================
+#  IntelliJ IDEA
+# ===============================
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.idea_modules/
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/dictionaries
+.idea/**/libraries
+.idea/**/shelf
+.idea/**/httpRequests
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/gradle.xml
+.idea/**/compiler.xml
+.idea/**/modules.xml
+.idea/**/caches/
+.idea/**/deployment.xml
+
+# ===============================
+#  Maven
+# ===============================
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+mvnw
+mvnw.cmd
+
+# ===============================
+#  System / OS
+# ===============================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+*.swp
+*.swo
+
+# ===============================
+#  Miscellaneous
+# ===============================
+# Environment / Credentials
+.env
+*.env
+*.key
+*.pem
+*.crt
+*.p12
+*.keystore
+
+# Temporary files
+*.tmp
+*.bak
+*.old
+
+# ===============================
+#  VS Code (por si abrís el repo ahí)
+# ===============================
+.vscode/
+.history/
+
+# ===============================
+#  H2 Database files (si usás file mode)
+# ===============================
+*.mv.db
+*.trace.db
