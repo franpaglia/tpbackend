@@ -47,7 +47,6 @@
             <artifactId>hibernate-community-dialects</artifactId>
         </dependency>
 
-
         <!-- Swagger / OpenAPI -->
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -61,6 +60,13 @@
             <artifactId>lombok</artifactId>
             <version>1.18.34</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- Dependencia al módulo transporte -->
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>transporte</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

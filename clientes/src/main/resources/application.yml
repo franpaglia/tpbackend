@@ -1,17 +1,19 @@
 server:
-  port: 8081
+  port: ${SERVER_PORT:8081}
 
 spring:
+  application:
+    name: servicio-clientes
+
   datasource:
-    url: jdbc:sqlite:clientes_db.sqlite
+    url: jdbc:sqlite:clientes.db
     driver-class-name: org.sqlite.JDBC
 
   jpa:
     hibernate:
       ddl-auto: update
-    database-platform: org.hibernate.community.dialect.SQLiteDialect
     show-sql: true
-
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
+    properties:
+      hibernate:
+        dialect: org.hibernate.community.dialect.SQLiteDialect
+        format_sql: true

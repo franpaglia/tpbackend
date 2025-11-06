@@ -1,0 +1,82 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: backend_tp_db
+    environment:
+      POSTGRES_DB: backend_tp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d backend_tp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend-net
+
+  servicio-clientes:
+    build:
+      context: ./clientes
+      dockerfile: Dockerfile
+    container_name: servicio-clientes
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/backend_tp
+      DB_USERNAME: postgres
+      DB_PASSWORD: admin
+      SERVER_PORT: 8081
+    ports:
+      - "8081:8081"
+    networks:
+      - backend-net
+
+  servicio-logistica:
+    build:
+      context: ./logistica
+      dockerfile: Dockerfile
+    container_name: servicio-logistica
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/backend_tp
+      DB_USERNAME: postgres
+      DB_PASSWORD: admin
+      SERVER_PORT: 8082
+    ports:
+      - "8082:8082"
+    networks:
+      - backend-net
+
+  servicio-transporte:
+    build:
+      context: ./transporte
+      dockerfile: Dockerfile
+    container_name: servicio-transporte
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/backend_tp
+      DB_USERNAME: postgres
+      DB_PASSWORD: admin
+      SERVER_PORT: 8083
+    ports:
+      - "8083:8083"
+    networks:
+      - backend-net
+
+volumes:
+  postgres_data:
+
+networks:
+  backend-net:
+    driver: bridge
