@@ -1,5 +1,6 @@
 package org.example.logistica.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,5 +28,6 @@ public class Solicitud {
     private Double tiempoReal;
 
     @OneToOne(mappedBy = "solicitud", cascade = CascadeType.ALL)
+    @JsonManagedReference  // 👈 AGREGA ESTO
     private Ruta ruta;
 }

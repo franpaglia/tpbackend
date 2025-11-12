@@ -1,82 +1,58 @@
-version: "3.9"
+version: '3.8'
 
 services:
-  db:
-    image: postgres:15
-    container_name: backend_tp_db
-    environment:
-      POSTGRES_DB: backend_tp
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
+  # API Gateway
+  api-gateway:
+    build: ./api-gateway
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d backend_tp"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - backend-net
-
-  servicio-clientes:
-    build:
-      context: ./clientes
-      dockerfile: Dockerfile
-    container_name: servicio-clientes
-    depends_on:
-      db:
-        condition: service_healthy
+      - "8080:8080"
     environment:
-      DB_URL: jdbc:postgresql://db:5432/backend_tp
-      DB_USERNAME: postgres
-      DB_PASSWORD: admin
-      SERVER_PORT: 8081
+      - CLIENTES_SERVICE_URL=http://servicio-clientes:8081
+      - LOGISTICA_SERVICE_URL=http://servicio-logistica:8082
+      - TRANSPORTE_SERVICE_URL=http://servicio-transporte:8083
+    depends_on:
+      - servicio-clientes
+      - servicio-logistica
+      - servicio-transporte
+    networks:
+      - logistica-network
+
+  # Microservicio de Clientes
+  servicio-clientes:
+    build: ./clientes
     ports:
       - "8081:8081"
-    networks:
-      - backend-net
-
-  servicio-logistica:
-    build:
-      context: ./logistica
-      dockerfile: Dockerfile
-    container_name: servicio-logistica
-    depends_on:
-      db:
-        condition: service_healthy
     environment:
-      DB_URL: jdbc:postgresql://db:5432/backend_tp
-      DB_USERNAME: postgres
-      DB_PASSWORD: admin
-      SERVER_PORT: 8082
+      - SERVER_PORT=8081
+    volumes:
+      - ./clientes/clientes.db:/app/clientes.db
+    networks:
+      - logistica-network
+
+  # Microservicio de Logística
+  servicio-logistica:
+    build: ./logistica
     ports:
       - "8082:8082"
-    networks:
-      - backend-net
-
-  servicio-transporte:
-    build:
-      context: ./transporte
-      dockerfile: Dockerfile
-    container_name: servicio-transporte
-    depends_on:
-      db:
-        condition: service_healthy
     environment:
-      DB_URL: jdbc:postgresql://db:5432/backend_tp
-      DB_USERNAME: postgres
-      DB_PASSWORD: admin
-      SERVER_PORT: 8083
+      - SERVER_PORT=8082
+    volumes:
+      - ./logistica/logistica.db:/app/logistica.db
+    networks:
+      - logistica-network
+
+  # Microservicio de Transporte
+  servicio-transporte:
+    build: ./transporte
     ports:
       - "8083:8083"
+    environment:
+      - SERVER_PORT=8083
+    volumes:
+      - ./transporte/transporte.db:/app/transporte.db
     networks:
-      - backend-net
-
-volumes:
-  postgres_data:
+      - logistica-network
 
 networks:
-  backend-net:
+  logistica-network:
     driver: bridge

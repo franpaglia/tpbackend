@@ -1,5 +1,6 @@
 package org.example.logistica.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,6 +35,7 @@ public class Tramo {
 
     @ManyToOne
     @JoinColumn(name = "ruta_id")
+    @JsonIgnoreProperties("tramos")  // 👈 Evita referencia circular
     private Ruta ruta;
 
     @ManyToOne

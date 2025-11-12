@@ -17,6 +17,10 @@ public class TramoService {
         this.repo = repo;
     }
 
+    public List<Tramo> listarTodos() {  // 👈 NUEVO
+        return repo.findAll();
+    }
+
     public Optional<Tramo> buscarPorId(Long id) {
         return repo.findById(id);
     }

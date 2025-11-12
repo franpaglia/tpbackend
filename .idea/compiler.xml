@@ -6,11 +6,19 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="api" />
-        <module name="logistica" />
-        <module name="clientes" />
-        <module name="transporte" />
+        <module name="api-gateway" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="clientes" target="22" />
+      <module name="logistica" target="22" />
+      <module name="transporte" target="22" />
+      <module name="untitled" target="22" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="api-gateway" options="-parameters" />
+    </option>
   </component>
 </project>

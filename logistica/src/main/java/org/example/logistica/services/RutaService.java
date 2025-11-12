@@ -4,6 +4,7 @@ import org.example.logistica.models.Ruta;
 import org.example.logistica.repositories.RutaRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -13,6 +14,10 @@ public class RutaService {
 
     public RutaService(RutaRepository repo) {
         this.repo = repo;
+    }
+
+    public List<Ruta> listarTodas() {  // 👈 NUEVO
+        return repo.findAll();
     }
 
     public Optional<Ruta> buscarPorId(Long idRuta) {
