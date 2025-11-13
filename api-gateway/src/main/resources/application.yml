@@ -8,56 +8,35 @@ spring:
   cloud:
     gateway:
       routes:
-        # ========== MICROSERVICIO DE CLIENTES (Puerto 8081) ==========
-        - id: clientes-service
-          uri: http://localhost:8081
+        - id: clientes
+          uri: http://servicio-clientes:8081
           predicates:
-            - Path=/api/clientes/**,/api/contenedores/**,/api/estados/**
+            - Path=/clientes/**
           filters:
-            - RewritePath=/api/(?<segment>.*), /api/$\{segment}
+            - StripPrefix=1
 
-        # ========== MICROSERVICIO DE LOGÍSTICA (Puerto 8082) ==========
-        - id: logistica-service
-          uri: http://localhost:8082
+        - id: logistica
+          uri: http://servicio-logistica:8082
           predicates:
-            - Path=/api/solicitudes/**,/api/rutas/**,/api/tramos/**,/api/tipos-tramo/**
+            - Path=/logistica/**
           filters:
-            - RewritePath=/api/(?<segment>.*), /api/$\{segment}
+            - StripPrefix=1
 
-        # ========== MICROSERVICIO DE TRANSPORTE (Puerto 8083) ==========
-        - id: transporte-service
-          uri: http://localhost:8083
+        - id: transporte
+          uri: http://servicio-transporte:8083
           predicates:
-            - Path=/api/camiones/**,/api/tarifas/**,/api/depositos/**
+            - Path=/transporte/**
           filters:
-            - RewritePath=/api/(?<segment>.*), /api/$\{segment}
+            - StripPrefix=1
 
-      # Configuración de CORS
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins: "*"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-            allowedHeaders: "*"
-            allowCredentials: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://keycloak:8080/realms/logistica-realm/protocol/openid-connect/certs
 
-# Actuator para monitoreo
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,gateway
-  endpoint:
-    health:
-      show-details: always
-
-# Logs
-logging:
-  level:
-    org.springframework.cloud.gateway: DEBUG
-    reactor.netty: INFO
+        include: health,info

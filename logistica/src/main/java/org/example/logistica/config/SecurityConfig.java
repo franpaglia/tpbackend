@@ -64,6 +64,6 @@ public class SecurityConfig {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
 
-        return jwtAuthenticationConverter();
+        return jwtAuthenticationConverter;
     }
 }

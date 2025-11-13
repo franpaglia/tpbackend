@@ -18,10 +18,8 @@ spring:
         dialect: org.hibernate.community.dialect.SQLiteDialect
         format_sql: true
 
-  # Configuración de seguridad OAuth2
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8180/realms/logistica-realm
-          jwk-set-uri: http://localhost:8180/realms/logistica-realm/protocol/openid-connect/certs
+          jwk-set-uri: http://keycloak:8080/realms/logistica-realm/protocol/openid-connect/certs

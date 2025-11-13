@@ -28,7 +28,7 @@ public class TarifaController {
 
     @Operation(
             summary = "Listar todas las tarifas",
-            description = "Obtiene todas las tarifas configuradas en el sistema (costo por km, litro de combustible, etc.)"
+            description = "Obtiene todas las tarifas configuradas en el sistema (costo por litro, etc.)"
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -40,6 +40,31 @@ public class TarifaController {
     @GetMapping
     public List<Tarifa> listar() {
         return service.listarTodas();
+    }
+
+    @Operation(
+            summary = "Obtener una tarifa por ID",
+            description = "Devuelve la tarifa indicada por su identificador"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Tarifa encontrada",
+                    content = @Content(schema = @Schema(implementation = Tarifa.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Tarifa no encontrada"
+            )
+    })
+    @GetMapping("/{idTarifa}")
+    public ResponseEntity<Tarifa> detalle(
+            @Parameter(description = "ID de la tarifa", required = true, example = "1")
+            @PathVariable Long idTarifa
+    ) {
+        return service.buscarPorId(idTarifa)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @Operation(
@@ -90,5 +115,24 @@ public class TarifaController {
     ) {
         Tarifa actualizada = service.actualizar(idTarifa, cambios);
         return ResponseEntity.ok(actualizada);
+    }
+
+    @Operation(
+            summary = "Eliminar una tarifa",
+            description = "Elimina una tarifa del sistema"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Tarifa eliminada correctamente"
+            )
+    })
+    @DeleteMapping("/{idTarifa}")
+    public ResponseEntity<Void> eliminar(
+            @Parameter(description = "ID de la tarifa", required = true, example = "1")
+            @PathVariable Long idTarifa
+    ) {
+        service.eliminar(idTarifa);
+        return ResponseEntity.noContent().build();
     }
 }

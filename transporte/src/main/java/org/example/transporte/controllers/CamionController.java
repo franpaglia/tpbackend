@@ -13,11 +13,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/camiones")
-@Tag(name = "Camiones", description = "API para gestionar la flota de camiones y su disponibilidad")
+@Tag(name = "Camiones", description = "API para gestionar camiones y su disponibilidad")
 public class CamionController {
 
     private final CamionService service;
@@ -26,44 +27,18 @@ public class CamionController {
         this.service = service;
     }
 
-    @Operation(
-            summary = "Listar camiones",
-            description = "Obtiene todos los camiones o solo los disponibles según el parámetro"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Lista de camiones obtenida exitosamente",
-                    content = @Content(schema = @Schema(implementation = Camion.class))
-            )
-    })
+    // ====================== LISTAR TODOS ======================
+    @Operation(summary = "Listar todos los camiones")
     @GetMapping
-    public List<Camion> listarTodos(
-            @Parameter(description = "Filtrar solo camiones disponibles", example = "false")
-            @RequestParam(name = "soloDisponibles", required = false, defaultValue = "false")
-            boolean soloDisponibles
-    ) {
-        return soloDisponibles ? service.listarDisponibles() : service.listarTodos();
+    public List<Camion> listarTodos() {
+        return service.listarTodos();
     }
 
-    @Operation(
-            summary = "Obtener detalle de un camión",
-            description = "Obtiene los detalles completos de un camión específico por su patente"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Camión encontrado",
-                    content = @Content(schema = @Schema(implementation = Camion.class))
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Camión no encontrado"
-            )
-    })
+    // ====================== DETALLE POR PATENTE ======================
+    @Operation(summary = "Obtener detalle de un camión por patente")
     @GetMapping("/{patente}")
     public ResponseEntity<Camion> detalle(
-            @Parameter(description = "Patente del camión", required = true, example = "ABC123")
+            @Parameter(description = "Patente del camión", example = "AA123BB")
             @PathVariable String patente
     ) {
         return service.buscarPorPatente(patente)
@@ -71,53 +46,59 @@ public class CamionController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @Operation(
-            summary = "Registrar un nuevo camión",
-            description = "Agrega un nuevo camión a la flota con sus capacidades y costos"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "Camión creado exitosamente",
-                    content = @Content(schema = @Schema(implementation = Camion.class))
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Datos inválidos en la solicitud"
-            )
-    })
+    // ====================== CREAR CAMIÓN ======================
+    @Operation(summary = "Registrar un nuevo camión")
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Camion crear(
-            @Parameter(description = "Datos del camión a registrar (patente, capacidades, costos)", required = true)
-            @RequestBody Camion camion
-    ) {
-        return service.crear(camion);
+    public ResponseEntity<Camion> crear(@RequestBody Camion camion) {
+        Camion creado = service.crear(camion);
+        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
 
+    // ====================== ACTUALIZAR CAMIÓN ======================
+    @Operation(summary = "Actualizar datos de un camión existente")
+    @PutMapping("/{patente}")
+    public ResponseEntity<Camion> actualizar(
+            @PathVariable String patente,
+            @RequestBody Camion datos
+    ) {
+        Camion actualizado = service.actualizar(patente, datos);
+        return ResponseEntity.ok(actualizado);
+    }
+
+    // ====================== ELIMINAR CAMIÓN ======================
+    @Operation(summary = "Eliminar un camión")
+    @DeleteMapping("/{patente}")
+    public ResponseEntity<Void> eliminar(@PathVariable String patente) {
+        service.eliminar(patente);
+        return ResponseEntity.noContent().build();
+    }
+
+    // ====================== LISTAR DISPONIBLES ======================
+    @Operation(summary = "Listar camiones disponibles")
+    @GetMapping("/disponibles")
+    public List<Camion> listarDisponibles() {
+        return service.listarDisponibles();
+    }
+
+    // ====================== VALIDAR CAPACIDAD ======================
     @Operation(
-            summary = "Cambiar disponibilidad de un camión",
-            description = "Actualiza el estado de disponibilidad de un camión (disponible/ocupado)"
+            summary = "Validar capacidad de un camión",
+            description = "Verifica si el camión puede transportar el peso y volumen indicados."
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Disponibilidad actualizada exitosamente",
-                    content = @Content(schema = @Schema(implementation = Camion.class))
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Camión no encontrado"
+                    description = "Resultado de la validación",
+                    content = @Content(schema = @Schema(implementation = Boolean.class))
             )
     })
-    @PutMapping("/{patente}/disponibilidad")
-    public ResponseEntity<Camion> cambiarDisponibilidad(
-            @Parameter(description = "Patente del camión", required = true, example = "ABC123")
+    @GetMapping("/{patente}/validar-capacidad")
+    public ResponseEntity<Boolean> validarCapacidad(
             @PathVariable String patente,
-            @Parameter(description = "Nueva disponibilidad del camión", required = true, example = "true")
-            @RequestParam boolean disponible
+            @RequestParam BigDecimal peso,
+            @RequestParam BigDecimal volumen
     ) {
-        Camion actualizado = service.actualizarDisponibilidad(patente, disponible);
-        return ResponseEntity.ok(actualizado);
+        boolean puede = service.tieneCapacidad(patente, peso, volumen);
+        return ResponseEntity.ok(puede);
     }
 }
