@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # API Gateway
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - CLIENTES_SERVICE_URL=http://servicio-clientes:8081
+      - LOGISTICA_SERVICE_URL=http://servicio-logistica:8082
+      - TRANSPORTE_SERVICE_URL=http://servicio-transporte:8083
+    depends_on:
+      - servicio-clientes
+      - servicio-logistica
+      - servicio-transporte
+    networks:
+      - logistica-network
+
+  # Microservicio de Clientes
+  servicio-clientes:
+    build: ./clientes
+    ports:
+      - "8081:8081"
+    environment:
+      - SERVER_PORT=8081
+    volumes:
+      - ./clientes/clientes.db:/app/clientes.db
+    networks:
+      - logistica-network
+
+  # Microservicio de Logística
+  servicio-logistica:
+    build: ./logistica
+    ports:
+      - "8082:8082"
+    environment:
+      - SERVER_PORT=8082
+    volumes:
+      - ./logistica/logistica.db:/app/logistica.db
+    networks:
+      - logistica-network
+
+  # Microservicio de Transporte
+  servicio-transporte:
+    build: ./transporte
+    ports:
+      - "8083:8083"
+    environment:
+      - SERVER_PORT=8083
+    volumes:
+      - ./transporte/transporte.db:/app/transporte.db
+    networks:
+      - logistica-network
+
+networks:
+  logistica-network:
+    driver: bridge

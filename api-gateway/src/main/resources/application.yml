@@ -1,0 +1,42 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: clientes
+          uri: http://servicio-clientes:8081
+          predicates:
+            - Path=/clientes/**
+          filters:
+            - StripPrefix=1
+
+        - id: logistica
+          uri: http://servicio-logistica:8082
+          predicates:
+            - Path=/logistica/**
+          filters:
+            - StripPrefix=1
+
+        - id: transporte
+          uri: http://servicio-transporte:8083
+          predicates:
+            - Path=/transporte/**
+          filters:
+            - StripPrefix=1
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://keycloak:8080/realms/logistica-realm/protocol/openid-connect/certs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

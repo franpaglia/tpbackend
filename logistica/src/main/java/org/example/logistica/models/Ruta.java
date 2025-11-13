@@ -1,7 +1,9 @@
 package org.example.logistica.models;
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.List;
+import java.math.BigDecimal;
 
 @Entity
 @Data
@@ -15,12 +17,18 @@ public class Ruta {
     private Long idRuta;
 
     @OneToOne
-    @JoinColumn(name = "solicitud_id")
+    @JoinColumn(name = "solicitud_id", nullable = false)
+    @JsonBackReference
     private Solicitud solicitud;
 
     private Integer cantTramos;
     private Integer cantDepositos;
 
-    private Double tiempoEstimado;
-    private String distanciaTotal; // podés usar Double km, pero en el DER lo tenías VARCHAR
+    private Double tiempoEstimado;      // suma de tiempos estimados de los tramos
+    private Double distanciaTotalKm;    // distancia total en kilómetros
+
+    private BigDecimal costoAproximadoTotal; // suma de costos aprox. de los tramos
+
+    @OneToMany(mappedBy = "ruta", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Tramo> tramos;
 }

@@ -5,6 +5,7 @@ import org.example.transporte.repositories.TarifaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TarifaService {
@@ -19,17 +20,25 @@ public class TarifaService {
         return repo.findAll();
     }
 
-    public Tarifa actualizar(Long idTarifa, Tarifa cambios) {
-        Tarifa tarifa = repo.findById(idTarifa)
-                .orElseThrow(() -> new RuntimeException("Tarifa no encontrada"));
-
-        tarifa.setCostoLtBase(cambios.getCostoLtBase());
-        // acá podrías copiar más campos si agregás otros componentes de costo
-
-        return repo.save(tarifa);
+    public Optional<Tarifa> buscarPorId(Long id) {
+        return repo.findById(id);
     }
 
     public Tarifa crear(Tarifa tarifa) {
         return repo.save(tarifa);
+    }
+
+    public Tarifa actualizar(Long id, Tarifa datos) {
+        return repo.findById(id)
+                .map(actual -> {
+                    actual.setCamion(datos.getCamion());
+                    actual.setCostoLtBase(datos.getCostoLtBase());
+                    return repo.save(actual);
+                })
+                .orElseThrow(() -> new RuntimeException("Tarifa no encontrada"));
+    }
+
+    public void eliminar(Long id) {
+        repo.deleteById(id);
     }
 }

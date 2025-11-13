@@ -1,0 +1,12 @@
+FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+  
+  # Copiamos el JAR generado por Maven
+COPY target/clientes-1.0-SNAPSHOT.jar app.jar
+  
+  # El puerto interno del contenedor (da igual, lo mapeás en docker-compose)
+EXPOSE 8081
+  
+  # Arrancar el microservicio
+ENTRYPOINT ["java", "-jar", "app.jar"]
